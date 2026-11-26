@@ -31,23 +31,48 @@ const patchMat=mat(0x796f50);for(let i=0;i<26;i++){const p=mesh(new THREE.Circle
 const tuftMat=mat(0x3e5e36);for(let i=0;i<420;i++){const x=(Math.random()-.5)*72,z=(Math.random()-.5)*58;if(Math.abs(z)<6)continue;const t=mesh(new THREE.ConeGeometry(.11+Math.random()*.12,.35+Math.random()*.35,4),tuftMat,x,.18,z,false,true);t.rotation.z=(Math.random()-.5)*.35}
 // trees along edge, not a real-site arrangement
 function tree(x,z,s=1){mesh(new THREE.CylinderGeometry(.18*s,.27*s,2.7*s,7),mat(0x62462e),x,1.35*s,z);for(let n=0;n<3;n++){const crown=mesh(new THREE.SphereGeometry(1.5*s,10,8),mat([0x416d42,0x527b46,0x5d8549][n]),x+(Math.random()-.5)*.8,2.7*s+n*.45*s,z+(Math.random()-.5)*.8);crown.scale.set(1,1.05,1)}}for(let i=0;i<12;i++)tree(-43+i*7.8,38+(i%2)*2,.85+Math.random()*.25);for(let i=0;i<9;i++)tree(-42+i*10,-39,.75);
-// soft distant skyline and generic industrial backdrop
+
+// Perimeter boundary walls around the playable field (fictional environment)
+const wallMat=mat(0xb9b5a8),wallTop=mat(0x8d918d),wallBase=mat(0x777b76);
+const wallH=3.2,wallT=.55;
+box(0,0,-43,92,wallH,wallT,wallMat);box(0,0,43,92,wallH,wallT,wallMat);
+box(-46,0,0,wallT,wallH,86,wallMat);box(46,0,0,wallT,wallH,86,wallMat);
+box(0,wallH,-43,92,.18,wallT,wallTop);box(0,wallH,43,92,.18,wallT,wallTop);
+box(-46,wallH,0,wallT,.18,86,wallTop);box(46,wallH,0,wallT,.18,86,wallTop);
+for(let x=-44;x<=44;x+=4){box(x,.35,-43,.12,.55,.6,wallBase);box(x,.35,43,.12,.55,.6,wallBase)}
+for(let z=-40;z<=40;z+=4){box(-46,.35,z,.6,.55,.12,wallBase);box(46,.35,z,.6,.55,.12,wallBase)}
+\n// soft distant skyline and generic industrial backdrop
 const distant=mat(0x9aaeb2),factory=mat(0xb5c1bf),roof=mat(0x65777b),window=mat(0x526f7a,.4);
 box(-24,0,-56,30,11,15,factory);box(15,0,-58,36,14,16,distant);box(-24,11,-56,30,.5,15,roof);box(15,14,-58,36,.5,16,roof);
 for(let x=-35;x<=-14;x+=5)box(x,3,-48.3,1.5,2.5,.12,window);for(let x=-1;x<=31;x+=6)box(x,4,-49.7,1.6,3,.12,window);
 // light posts, benches, path details
 for(let x=-33;x<=33;x+=16.5){mesh(new THREE.CylinderGeometry(.07,.12,4.3,8),mat(0x41494a),x,2.15,10.5);mesh(new THREE.BoxGeometry(.55,.16,.32),mat(0xffedc2),x,4.35,10.5)}
 for(let x of [-22,22]){box(x,.15,18,3,.3,.8,mat(0x806b4b));box(x,.55,18,3,.15,.8,mat(0x785e3f));for(let dx of [-1.2,1.2])box(x+dx,.15,18,.12,.7,.12,mat(0x45494a))}
-const player=new THREE.Group();const torso=mesh(new THREE.CapsuleGeometry(.32,.68,4,8),mat(0x2c4d6b),0,1.1,0,false);torso.position.y=1.1;player.add(torso);
-const head=mesh(new THREE.SphereGeometry(.24,14,12),mat(0xc99b78),0,1.85,0,false);head.position.y=1.85;player.add(head);
-const armL=mesh(new THREE.CapsuleGeometry(.09,.42,3,6),mat(0x2c4d6b),-.42,1.1,0,false);armL.position.set(-.4,1.12,0);player.add(armL);const armR=mesh(new THREE.CapsuleGeometry(.09,.42,3,6),mat(0x2c4d6b),.42,1.1,0,false);armR.position.set(.4,1.12,0);player.add(armR);
-const legL=mesh(new THREE.CapsuleGeometry(.12,.48,3,6),mat(0x26343d),-.16,.48,0,false);legL.position.set(-.16,.48,0);player.add(legL);const legR=mesh(new THREE.CapsuleGeometry(.12,.48,3,6),mat(0x26343d),.16,.48,0,false);legR.position.set(.16,.48,0);player.add(legR);scene.add(player);player.position.set(0,0,21);
+// Human-proportioned player avatar with separate body parts and animated joints
+const player=new THREE.Group();
+const avatarMat=(color,rough=.75)=>new THREE.MeshStandardMaterial({color,roughness:rough});
+const skin=avatarMat(0xb98260),shirt=avatarMat(0x31516c),pants=avatarMat(0x263541),shoe=avatarMat(0x171b20),hair=avatarMat(0x211b18),eyeMat=avatarMat(0x171717);
+function part(geo,material,pos){const o=new THREE.Mesh(geo,material);o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;return o}
+const torso=part(new THREE.BoxGeometry(.48,.62,.27),shirt,[0,1.35,0]);torso.scale.set(1,1.04,1);player.add(torso);
+const neck=part(new THREE.CylinderGeometry(.09,.1,.15,10),skin,[0,1.73,0]);player.add(neck);
+const head=part(new THREE.SphereGeometry(.22,24,18),skin,[0,1.92,0]);head.scale.set(.92,1.15,.92);player.add(head);
+// ears and facial features on front (-Z)
+for(const side of [-1,1]){player.add(part(new THREE.SphereGeometry(.055,12,10),skin,[side*.215,1.92,0]));player.add(part(new THREE.SphereGeometry(.025,10,8),eyeMat,[side*.075,1.98,-.194]))}
+const nose=part(new THREE.SphereGeometry(.045,10,8),skin,[0,1.91,-.22]);nose.scale.set(.65,1,.7);player.add(nose);
+const mouth=part(new THREE.BoxGeometry(.07,.018,.015),avatarMat(0x5b2d25),[0,1.84,-.213]);player.add(mouth);
+const haircap=part(new THREE.SphereGeometry(.225,20,12),hair,[0,2.055,0]);haircap.scale.set(1, .52,1);player.add(haircap);
+const hairfront=part(new THREE.BoxGeometry(.32,.08,.07),hair,[0,2.015,-.18]);player.add(hairfront);
+const armL=new THREE.Group(),armR=new THREE.Group();armL.position.set(-.31,1.58,0);armR.position.set(.31,1.58,0);player.add(armL,armR);
+for(const [g,side] of [[armL,-1],[armR,1]]){g.add(part(new THREE.SphereGeometry(.105,12,10),shirt,[0,0,0]));const upper=part(new THREE.CapsuleGeometry(.075,.25,5,10),shirt,[0,-.2,0]);g.add(upper);const elbow=part(new THREE.SphereGeometry(.07,12,10),skin,[0,-.39,0]);g.add(elbow);const fore=part(new THREE.CapsuleGeometry(.06,.24,5,10),skin,[0,-.55,0]);g.add(fore);const hand=part(new THREE.SphereGeometry(.075,12,10),skin,[0,-.72,0]);g.add(hand)}
+const legL=new THREE.Group(),legR=new THREE.Group();legL.position.set(-.13,1.05,0);legR.position.set(.13,1.05,0);player.add(legL,legR);
+for(const g of [legL,legR]){g.add(part(new THREE.CapsuleGeometry(.105,.32,5,10),pants,[0,-.22,0]));g.add(part(new THREE.SphereGeometry(.09,12,10),pants,[0,-.42,0]));g.add(part(new THREE.CapsuleGeometry(.09,.28,5,10),pants,[0,-.58,0]));const foot=part(new THREE.BoxGeometry(.17,.1,.28),shoe,[0,-.78,-.06]);g.add(foot)}
+scene.add(player);player.position.set(0,0,21);
 let yaw=0,pitch=-.12,moveX=0,moveY=0,keys={},running=false,jumpY=0,jumpVel=0;addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(e.key.toLowerCase()))e.preventDefault()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 renderer.domElement.addEventListener('click',()=>{if(matchMedia('(pointer:fine)').matches)renderer.domElement.requestPointerLock?.()});addEventListener('mousemove',e=>{if(document.pointerLockElement){yaw-=e.movementX*.002;pitch=Math.max(-.5,Math.min(.4,pitch-e.movementY*.002))}});
 const pad=document.getElementById('pad'),stick=document.getElementById('stick');let active=false,padCenter={x:0,y:0};pad.addEventListener('pointerdown',e=>{active=true;pad.setPointerCapture(e.pointerId);const r=pad.getBoundingClientRect();padCenter={x:r.left+r.width/2,y:r.top+r.height/2};moveStick(e)});pad.addEventListener('pointermove',e=>{if(active)moveStick(e)});pad.addEventListener('pointerup',padReset);pad.addEventListener('pointercancel',padReset);function padReset(){active=false;moveX=moveY=0;stick.style.transform='translate(0,0)'}function moveStick(e){let dx=e.clientX-padCenter.x,dy=e.clientY-padCenter.y,l=Math.hypot(dx,dy),max=39;if(l>max){dx*=max/l;dy*=max/l}moveX=dx/max;moveY=-dy/max;stick.style.transform='translate('+dx+'px,'+dy+'px)'}
 let lookTouch=null;const look=document.getElementById('look');look.addEventListener('pointerdown',e=>{lookTouch={x:e.clientX,y:e.clientY};look.setPointerCapture(e.pointerId)});look.addEventListener('pointermove',e=>{if(lookTouch){yaw-=(e.clientX-lookTouch.x)*.006;pitch=Math.max(-.5,Math.min(.4,pitch-(e.clientY-lookTouch.y)*.004));lookTouch={x:e.clientX,y:e.clientY}}});look.addEventListener('pointerup',()=>lookTouch=null);look.addEventListener('pointercancel',()=>lookTouch=null);
 const runBtn=document.getElementById('run');runBtn.addEventListener('pointerdown',e=>{e.preventDefault();running=true});runBtn.addEventListener('pointerup',()=>running=false);runBtn.addEventListener('pointercancel',()=>running=false);runBtn.addEventListener('pointerleave',()=>running=false);
-const clock=new THREE.Clock();let camPos=new THREE.Vector3();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04),time=clock.elapsedTime;let f=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)+moveY;let turn=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+moveX;yaw+=turn*2.15*dt;let len=Math.abs(f);const sprint=keys.shift||running,speed=sprint?7.6:4.2;player.position.x+=Math.sin(yaw)*f*speed*dt;player.position.z+=(-Math.cos(yaw))*f*speed*dt;if(keys.space&&jumpY<=.001)jumpVel=6.4;jumpVel-=16*dt;jumpY=Math.max(0,jumpY+jumpVel*dt);if(jumpY===0)jumpVel=0;player.position.y=jumpY;player.position.x=Math.max(-55,Math.min(55,player.position.x));player.position.z=Math.max(-52,Math.min(53,player.position.z));if(len>.06){player.rotation.y=yaw;const swing=Math.sin(time*(sprint?11:7))*Math.min(len,1);legL.rotation.x=swing*.65;legR.rotation.x=-swing*.65;armL.rotation.x=-swing*.45;armR.rotation.x=swing*.45}else{legL.rotation.x*=.85;legR.rotation.x*=.85;armL.rotation.x*=.85;armR.rotation.x*=.85}
+const clock=new THREE.Clock();let camPos=new THREE.Vector3();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04),time=clock.elapsedTime;let f=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)+moveY;let turn=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+moveX;yaw+=turn*2.15*dt;let len=Math.abs(f);const sprint=keys.shift||running,speed=sprint?7.6:4.2;player.position.x+=Math.sin(yaw)*f*speed*dt;player.position.z+=(-Math.cos(yaw))*f*speed*dt;if(keys.space&&jumpY<=.001)jumpVel=6.4;jumpVel-=16*dt;jumpY=Math.max(0,jumpY+jumpVel*dt);if(jumpY===0)jumpVel=0;player.position.y=jumpY;player.position.x=Math.max(-43,Math.min(43,player.position.x));player.position.z=Math.max(-40,Math.min(40,player.position.z));if(len>.06){player.rotation.y=yaw;const swing=Math.sin(time*(sprint?11:7))*Math.min(len,1);legL.rotation.x=swing*.65;legR.rotation.x=-swing*.65;armL.rotation.x=-swing*.45;armR.rotation.x=swing*.45}else{legL.rotation.x*=.85;legR.rotation.x*=.85;armL.rotation.x*=.85;armR.rotation.x*=.85}
 const target=new THREE.Vector3(player.position.x,1.5,player.position.z);const dir=new THREE.Vector3(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));const desired=target.clone().addScaledVector(dir,-6.8);desired.y+=2.05;camPos.lerp(desired,1-Math.exp(-7*dt));camera.position.copy(camPos);camera.lookAt(target.clone().add(new THREE.Vector3(0,.65,0)));renderer.render(scene,camera)}
 animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
