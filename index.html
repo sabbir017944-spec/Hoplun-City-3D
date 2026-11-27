@@ -46,10 +46,35 @@ box(0,wallH,-43,92,.18,wallT,wallTop);box(0,wallH,43,92,.18,wallT,wallTop);
 box(-46,wallH,0,wallT,.18,86,wallTop);box(46,wallH,0,wallT,.18,86,wallTop);
 for(let x=-44;x<=44;x+=4){box(x,.35,-43,.12,.55,.6,wallBase);box(x,.35,43,.12,.55,.6,wallBase)}
 for(let z=-40;z<=40;z+=4){box(-46,.35,z,.6,.55,.12,wallBase);box(46,.35,z,.6,.55,.12,wallBase)}
-// soft distant skyline and generic industrial backdrop
-const distant=mat(0x9aaeb2),factory=mat(0xb5c1bf),roof=mat(0x65777b),window=mat(0x526f7a,.4);
-box(-24,0,-56,30,11,15,factory);box(15,0,-58,36,14,16,distant);box(-24,11,-56,30,.5,15,roof);box(15,14,-58,36,.5,16,roof);
-for(let x=-35;x<=-14;x+=5)box(x,3,-48.3,1.5,2.5,.12,window);for(let x=-1;x<=31;x+=6)box(x,4,-49.7,1.6,3,.12,window);
+// Detailed fictional industrial campus: HOPLUN APPAREL LIMITED
+const distant=mat(0x9aaeb2),factory=mat(0xc4c8c4),roof=mat(0x5b6669),window=mat(0x25424b,.32);
+const facade=mat(0xb9c1bf),darkPanel=mat(0x778487),glass=mat(0x345866,.28),metal=mat(0x454e50),dock=mat(0x777e7d);
+// Main garment factory building, outside the playable perimeter as a backdrop
+box(-2,0,-66,58,17,22,factory);box(-2,17,-66,58,.65,22,roof);
+box(-2,15.7,-54.9,58,.45,.18,darkPanel);box(-2,.25,-54.9,58,.5,.25,metal);
+// Front facade vertical structural columns and panel bands
+for(let x=-29;x<=25;x+=6.5){box(x,0,-54.75,.32,17,.35,facade);box(x,17,-66,.32,.7,22,metal)}
+box(-2,8.8,-54.72,58,.38,.32,darkPanel);box(-2,2.2,-54.72,58,.28,.32,darkPanel);
+// Window bands: blue-tinted factory windows in repeated bays
+for(let x=-25;x<=22;x+=6.5){for(let y of [4.8,6.6,11.2,13.0]){box(x,y,-54.63,4.3,1.25,.12,glass);box(x,y+0.72,-54.56,4.35,.08,.12,metal);box(x,y-.72,-54.56,4.35,.08,.12,metal)}}
+// Loading bay shutters and dock platforms
+for(let x of [-19,-7,5,17]){box(x,3.3,-54.5,4.2,5.8,.25,metal);box(x,3.3,-54.32,3.7,5.2,.1,darkPanel);for(let y=.9;y<5.8;y+=.55)box(x,y,-54.24,3.65,.045,.06,facade);box(x,0,-53.9,5.2,.55,1.2,dock);box(x,0.6,-53.4,5.2,.12,.2,metal)}
+// Signboard canvas, readable brand name
+const signCanvas=document.createElement('canvas');signCanvas.width=1024;signCanvas.height=220;const signCtx=signCanvas.getContext('2d');
+signCtx.fillStyle='#173b4a';signCtx.fillRect(0,0,1024,220);signCtx.strokeStyle='#d9e6e6';signCtx.lineWidth=8;signCtx.strokeRect(10,10,1004,200);
+signCtx.fillStyle='#e9f1ef';signCtx.font='bold 76px Arial';signCtx.textAlign='center';signCtx.fillText('HOPLUN APPAREL LIMITED',512,145);
+const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;
+const sign=mesh(new THREE.PlaneGeometry(23,4.8),new THREE.MeshBasicMaterial({map:signTex}),-2,14.2,-54.45,false,false);
+// Factory roof equipment: skylights, HVAC blocks, ventilation pipes
+for(let x=-23;x<=19;x+=10){box(x,17.45,-66,5,1.1,3,mat(0x899393));box(x,18.1,-66,4.5,.15,2.7,metal)}
+for(let x=-24;x<=20;x+=8){mesh(new THREE.CylinderGeometry(.65,.8,3.6,12),mat(0x6b7778),x,18.4,-70);mesh(new THREE.CylinderGeometry(.85,.85,.18,12),metal,x,20.2,-70)}
+// Side wing and distant factory silhouette
+box(34,0,-70,22,12,18,distant);box(34,12,-70,22,.5,18,roof);for(let x=26;x<=42;x+=5)box(x,5,-60.65,1.6,3.2,.12,window);
+// Ground-level factory yard apron and simple parked delivery vehicle
+box(-2,.08,-50,62,.16,8,path);box(31,.08,-48,10,.16,5,concrete);
+const vanBody=mat(0xd8dedb),vanGlass=mat(0x31515c,.3),wheel=mat(0x22272a);
+box(31,.75,-48,5.8,1.4,2.2,vanBody);box(33.2,1.3,-48,1.6,1.8,2.1,vanBody);box(33.4,1.6,-46.92,1.2,.9,.08,vanGlass);
+for(let x of [29,33.3])for(let z of [-48.9,-47.1])mesh(new THREE.CylinderGeometry(.42,.42,.2,16),wheel,x,.42,z).rotation.x=Math.PI/2;
 // light posts, benches, path details
 for(let x=-33;x<=33;x+=16.5){mesh(new THREE.CylinderGeometry(.07,.12,4.3,8),mat(0x41494a),x,2.15,10.5);mesh(new THREE.BoxGeometry(.55,.16,.32),mat(0xffedc2),x,4.35,10.5)}
 for(let x of [-22,22]){box(x,.15,18,3,.3,.8,mat(0x806b4b));box(x,.55,18,3,.15,.8,mat(0x785e3f));for(let dx of [-1.2,1.2])box(x+dx,.15,18,.12,.7,.12,mat(0x45494a))}
