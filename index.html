@@ -37,6 +37,8 @@ const tuftMat=mat(0x3e5e36);for(let i=0;i<420;i++){const x=(Math.random()-.5)*72
 // trees along edge, not a real-site arrangement
 function tree(x,z,s=1){mesh(new THREE.CylinderGeometry(.18*s,.27*s,2.7*s,7),mat(0x62462e),x,1.35*s,z);for(let n=0;n<3;n++){const crown=mesh(new THREE.SphereGeometry(1.5*s,10,8),mat([0x416d42,0x527b46,0x5d8549][n]),x+(Math.random()-.5)*.8,2.7*s+n*.45*s,z+(Math.random()-.5)*.8);crown.scale.set(1,1.05,1)}}for(let i=0;i<12;i++)tree(-43+i*7.8,38+(i%2)*2,.85+Math.random()*.25);for(let i=0;i<9;i++)tree(-42+i*10,-39,.75);
 
+// Declare shared metal material before any gate or campus mesh uses it
+const metal=mat(0x454e50);
 // Expanded perimeter boundary now encloses the field AND Hoplun Apparel factory campus
 const wallMat=mat(0xb9b5a8),wallTop=mat(0x8d918d),wallBase=mat(0x777b76);
 const wallH=3.6,wallT=.65,sideX=55,frontZ=43,rearZ=-84;
@@ -56,7 +58,7 @@ const gateMetal=mat(0x454e50);box(0,2.15,frontZ,12,.22,.35,gateMetal);for(let x=
 const gateRoofMat=mat(0x65777b);box(0,4.6,frontZ,15,.5,.6,gateRoofMat);
 // Detailed fictional industrial campus: HOPLUN APPAREL LIMITED
 const distant=mat(0x9aaeb2),factory=mat(0xc4c8c4),roof=mat(0x5b6669),window=mat(0x25424b,.32);
-const facade=mat(0xb9c1bf),darkPanel=mat(0x778487),glass=mat(0x345866,.28),metal=mat(0x454e50),dock=mat(0x777e7d);
+const facade=mat(0xb9c1bf),darkPanel=mat(0x778487),glass=mat(0x345866,.28),dock=mat(0x777e7d);
 // Main garment factory building, outside the playable perimeter as a backdrop
 box(-2,0,-66,58,17,22,factory);box(-2,17,-66,58,.65,22,roof);
 box(-2,15.7,-54.9,58,.45,.18,darkPanel);box(-2,.25,-54.9,58,.5,.25,metal);
