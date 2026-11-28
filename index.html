@@ -53,7 +53,7 @@ for(let z=rearZ+3;z<=frontZ-3;z+=4){box(-sideX,.35,z,.65,.55,.12,wallBase);box(s
 // Entrance gate pillars and decorative gate rails
 for(let x of [-7,7]){box(x,0,frontZ,1.4,5.2,1.4,wallMat);box(x,5.2,frontZ,1.8,.35,1.8,wallTop)}
 const gateMetal=mat(0x454e50);box(0,2.15,frontZ,12,.22,.35,gateMetal);for(let x=-5.5;x<=5.5;x+=1.1)box(x,1.25,frontZ,.12,2.5,.2,gateMetal);
-box(0,4.6,frontZ,15,.5,.6,roof);
+const gateRoofMat=mat(0x65777b);box(0,4.6,frontZ,15,.5,.6,gateRoofMat);
 // Detailed fictional industrial campus: HOPLUN APPAREL LIMITED
 const distant=mat(0x9aaeb2),factory=mat(0xc4c8c4),roof=mat(0x5b6669),window=mat(0x25424b,.32);
 const facade=mat(0xb9c1bf),darkPanel=mat(0x778487),glass=mat(0x345866,.28),metal=mat(0x454e50),dock=mat(0x777e7d);
